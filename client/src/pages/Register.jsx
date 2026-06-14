@@ -1,0 +1,80 @@
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import API from '../api/axios';
+
+const Register = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      await API.post('/auth/register', formData);
+      navigate('/login');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Registration failed');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <div style={{ width: '100%', maxWidth: '400px', padding: '40px', background: 'white', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+        <h2 style={{ marginBottom: '20px', textAlign: 'center', color: '#2d3748' }}>Create Account</h2>
+        {error && (
+          <p style={{ color: '#e53e3e', textAlign: 'center', marginBottom: '15px', backgroundColor: '#fff5f5', padding: '8px', borderRadius: '6px' }}>
+            {error}
+          </p>
+        )}
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '15px' }}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              style={{ width: '100%', padding: '10px 12px' }}
+            />
+          </div>
+          <div style={{ marginBottom: '15px' }}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              style={{ width: '100%', padding: '10px 12px' }}
+            />
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              style={{ width: '100%', padding: '10px 12px' }}
+            />
+          </div>
+          <button type="submit" style={{ width: '100%', padding: '12px' }}>
+            Register
+          </button>
+        </form>
+        <p style={{ marginTop: '15px', textAlign: 'center', color: '#718096' }}>
+          Already have an account? <Link to="/login" style={{ color: '#4299e1', fontWeight: '600' }}>Login</Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Register;
